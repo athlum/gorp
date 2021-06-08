@@ -14,13 +14,13 @@ import (
 
 {{- if .Init }}
 func init() {
-	gorpUtil.Tables.Add({{.Name}}{})
+	utils.Tables.Add({{.Name}}{})
 }
 
 {{- end }}
 var (
 {{- range $f, $tf := .Fields }}
-	{{$dot.Name}}_{{$f}}    = gorpUtil.TableField("{{$dot.Table}}", "{{$tf}}")
+	{{$dot.Name}}_{{$f}}    = utils.TableField("{{$dot.Table}}", "{{$tf}}")
 {{- end}}
 )
 
@@ -35,8 +35,8 @@ const (
 // Relation objects
 var (
 {{- range $edge, $rel := .Rels}}
-    Rel_{{$dot.Name}}_{{$rel.Name}}_{{$edge}} = gorpUtil.R(new({{$rel.Name}}), "{{$edge}}")
-    Rel_{{$rel.Name}}_{{$dot.Name}}_{{$edge}} = gorpUtil.R(new({{$dot.Name}}), "{{$edge}}")
+    Rel_{{$dot.Name}}_{{$rel.Name}}_{{$edge}} = utils.R(new({{$rel.Name}}), "{{$edge}}")
+    Rel_{{$rel.Name}}_{{$dot.Name}}_{{$edge}} = utils.R(new({{$dot.Name}}), "{{$edge}}")
 {{- end}}
 )
 {{end}}
@@ -65,13 +65,13 @@ func (t {{.Name}}) VersionField() string {
     return "{{.Version}}"
 }
 
-func (t {{.Name}}) PK() (*gorpUtil.Field, interface{}) {
+func (t {{.Name}}) PK() (*utils.Field, interface{}) {
 	return {{.Name}}_{{.ID}}, t.{{.ID}}
 }
 
 {{ if .Rels }}
-func (t *{{.Name}}) Relation(edge string) (*gorpUtil.Field, bool) {
-	fm := map[string]*gorpUtil.Field{
+func (t *{{.Name}}) Relation(edge string) (*utils.Field, bool) {
+	fm := map[string]*utils.Field{
 {{- range $edge, $rel := .Rels }}
 	"{{$edge}}": {{$rel.Name}}_{{$rel.Field}},
 {{- end }}
@@ -80,7 +80,7 @@ func (t *{{.Name}}) Relation(edge string) (*gorpUtil.Field, bool) {
     return fk, ok
 }
 {{ else }}
-func (t *{{.Name}}) Relation(edge string) (*gorpUtil.Field, bool) {
+func (t *{{.Name}}) Relation(edge string) (*utils.Field, bool) {
 	return nil, false
 }
 {{- end }}
@@ -118,11 +118,11 @@ func (t *{{.Name}}) InsertWithHooks(db gorp.SqlExecutor, preAndPostHook ...func(
 func (t *{{.Name}}) Insert(db gorp.SqlExecutor) error {
 {{ if .Fields.CreatedTime }}
 	if !t.CreatedTime.Valid {
-		t.CreatedTime = gorpUtil.Now()
+		t.CreatedTime = utils.Now()
 	}
 {{- end }}
 {{- if .Fields.UpdatedTime }}
-	t.UpdatedTime = gorpUtil.Now()
+	t.UpdatedTime = utils.Now()
 {{- end }}
 	err := db.Insert(t)
 	if err != nil {
@@ -155,7 +155,7 @@ func (t *{{.Name}}) UpdateWithHooks(db gorp.SqlExecutor, preAndPostHook ...func(
 
 func (t *{{.Name}}) Update(db gorp.SqlExecutor) error {
 {{ if .Fields.UpdatedTime }}
-	t.UpdatedTime = gorpUtil.Now()
+	t.UpdatedTime = utils.Now()
 {{- end }}
 	_, err := db.Update(t)
 	if err != nil {
@@ -189,9 +189,9 @@ func (t *{{.Name}}) RemoveWithHooks(db gorp.SqlExecutor, preAndPostHook ...func(
 
 func (t *{{.Name}}) Remove(db gorp.SqlExecutor) error {
 {{ if .Fields.UpdatedTime }}
-	t.UpdatedTime = gorpUtil.Now()
+	t.UpdatedTime = utils.Now()
 {{- end }}
-	t.RemovedTime = gorpUtil.Now()
+	t.RemovedTime = utils.Now()
 {{- if .Fields.Removed }}
 	t.Removed = true
 {{- end }}
@@ -235,7 +235,7 @@ func (t *{{.Name}}) Delete(db gorp.SqlExecutor) error {
 }
 
 {{ if .Muls }}
-func (t *{{.Name}}) Multiple(edge string) (string, *gorpUtil.Field, *gorpUtil.Field, bool) {
+func (t *{{.Name}}) Multiple(edge string) (string, *utils.Field, *utils.Field, bool) {
     switch edge {
 {{- range $mul := .Muls }}
     	case "{{$mul.Edge}}":
@@ -245,25 +245,25 @@ func (t *{{.Name}}) Multiple(edge string) (string, *gorpUtil.Field, *gorpUtil.Fi
 	return "", nil, nil, false
 }
 {{ else }}
-func (t *{{.Name}}) Multiple(edge string) (string, *gorpUtil.Field, *gorpUtil.Field, bool) {
+func (t *{{.Name}}) Multiple(edge string) (string, *utils.Field, *utils.Field, bool) {
 	return "", nil, nil, false
 }
 {{- end }}
 
-func (t *{{.Name}}) Where(cs ...*gorpUtil.Condition) *gorpUtil.Query {
-	return gorpUtil.Get(t).Where(cs...)
+func (t *{{.Name}}) Where(cs ...*utils.Condition) *utils.Query {
+	return utils.Get(t).Where(cs...)
 }
-func (t *{{.Name}}) Rel(m gorpUtil.Model, edge string) *gorpUtil.Query {
-	return gorpUtil.Get(t).Rel(m, edge)
+func (t *{{.Name}}) Rel(m utils.Model, edge string) *utils.Query {
+	return utils.Get(t).Rel(m, edge)
 }
-func (t *{{.Name}}) Rels(rs ...*gorpUtil.Relation) *gorpUtil.Query {
-	return gorpUtil.Get(t).Rels(rs...)
+func (t *{{.Name}}) Rels(rs ...*utils.Relation) *utils.Query {
+	return utils.Get(t).Rels(rs...)
 }
 {{- if .Rels}}
 // Relations
 {{- range $edge, $rel := .Rels}}
-func (t *{{$dot.Name}}) Rel_{{$edge}}() *gorpUtil.Query {
-	return gorpUtil.Get(t).Rel(new({{$rel.Name}}), "{{$edge}}")
+func (t *{{$dot.Name}}) Rel_{{$edge}}() *utils.Query {
+	return utils.Get(t).Rel(new({{$rel.Name}}), "{{$edge}}")
 }
 {{- end}}
 {{end}}
@@ -276,7 +276,7 @@ func (t *{{$dot.Name}}) String() string {
 
 // pagination
 type {{$dot.Name}}PageResp struct {
-	*gorpUtil.PageResponse
+	*utils.PageResponse
 	Data []*{{$dot.Name}} ` + "`" + `db:"data" json:"data"` + "`" + `
 }
 
@@ -285,13 +285,13 @@ func (t *{{$dot.Name}}PageResp) String() string {
 	return string(bs)
 }
 
-func Load{{$dot.Name}}Page(tx gorp.SqlExecutor, resp *{{$dot.Name}}PageResp, q *gorpUtil.Query, page *gorpUtil.Page) error {
+func Load{{$dot.Name}}Page(tx gorp.SqlExecutor, resp *{{$dot.Name}}PageResp, q *utils.Query, page *utils.Page) error {
 	resp.Data = make([]*{{$dot.Name}}, 0)
-	total, err := gorpUtil.LoadPage(tx, q, page, &resp.Data)
+	total, err := utils.LoadPage(tx, q, page, &resp.Data)
 	if err != nil {
 		return errors.Trace(err)
 	}
-	resp.PageResponse = gorpUtil.NewPageResponse(page, total, resp.Data)
+	resp.PageResponse = utils.NewPageResponse(page, total, resp.Data)
 	return nil
 }
 `

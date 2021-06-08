@@ -172,9 +172,6 @@ func parseEntityMeta(pkg string, name string, structType *ast.StructType, commen
 			switch annotation.Name {
 			case "@TABLE":
 				em.Table = annotation.Key
-			case "@GMT_TABLE":
-				em.Table = annotation.Key
-				em.GmtTable = true
 			case "@PK":
 				em.ID = annotation.Key
 			case "@VER":

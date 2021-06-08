@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"gopkg.in/gorp.v2"
+	"github.com/athlum/gorp"
 
 	"github.com/juju/errors"
 )

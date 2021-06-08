@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/juju/errors"
-	"gopkg.in/gorp.v2"
+	"github.com/athlum/gorp"
 )
 
 var (
