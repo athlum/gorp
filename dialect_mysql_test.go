@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-gorp/gorp/v3"
+	"github.com/athlum/gorp"
 	"github.com/poy/onpar"
 	"github.com/poy/onpar/expect"
 	"github.com/poy/onpar/matchers"
