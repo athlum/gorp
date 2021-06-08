@@ -265,9 +265,6 @@ func (e *entityMeta) generate(tpl *template.Template) {
 		"github.com/athlum/gorp",
 		"github.com/juju/errors",
 	}
-	//if (e.Fields["CreatedTime"] + e.Fields["UpdatedTime"] + e.Fields["RemovedTime"]) != "" {
-	//	e.Imports = append(e.Imports, "time")
-	//}
 
 	buf := new(bytes.Buffer)
 	if err := tpl.Execute(buf, e); err != nil {

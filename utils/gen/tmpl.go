@@ -191,7 +191,6 @@ func (t *{{.Name}}) Remove(db gorp.SqlExecutor) error {
 {{ if .Fields.UpdatedTime }}
 	t.UpdatedTime = utils.Now()
 {{- end }}
-	t.RemovedTime = utils.Now()
 {{- if .Fields.Removed }}
 	t.Removed = true
 {{- end }}
